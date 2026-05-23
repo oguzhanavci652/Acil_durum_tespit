@@ -1,0 +1,51 @@
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+#include <ArduinoJson.h>
+
+
+const char* ssid = "wifi name";
+const char* password = "wifi password";
+
+
+const String BOT_TOKEN = "bot id";
+const String CHAT_ID = "target id";
+
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOT_TOKEN, client);
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  Serial.print("Wi-Fi agina baglaniliyor: ");
+  Serial.println(ssid);
+  
+  WiFi.mode(WIFI_STA); 
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWi-Fi Baglantisi Basarili!");
+  Serial.print("IP Adresi: ");
+  Serial.println(WiFi.localIP());
+
+  client.setInsecure(); 
+
+  Serial.println("Telegram'a test mesaji gonderiliyor...");
+  
+  String mesaj = "🟢 Sistem Aktif: ESP32 basariyla Wi-Fi'a baglandi ve Telegram haberlesmesi dogrulandi.";
+  
+  if (bot.sendMessage(CHAT_ID, mesaj, "")) {
+    Serial.println("Mesaj basariyla gonderildi!");
+  } else {
+    Serial.println("HATA: Mesaj gonderilemedi. Token, Chat ID veya Insecure ayarini kontrol et.");
+  }
+}
+
+void loop() {
+  
+}  
